@@ -1,0 +1,60 @@
+﻿@inherits LayoutComponentBase
+
+<PageTitle>BC.Util</PageTitle>
+
+<div class="page">
+    <Layout>
+    <Sider Style="overflow: auto;height: 100vh;position: fixed;left: 0;">
+        <div class="logo">
+			<a href="/" title="返回首页"></a>
+			<h1>实用工具</h1>
+			<p>功能全面的在线工具箱</p>
+		</div>
+        <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Inline" DefaultSelectedKeys=@(new[]{"sub1"}) DefaultOpenKeys=@(new[] {"sub1"})>
+            @{ RenderFragment sub1Title =
+                        @<span>
+                            <Icon Type="user" Theme="outline" />
+                            编码加密
+                        </span>; }
+                    <SubMenu Key="sub1" Title="编码加密">
+                        <NavLink class="nav-link" href="guid" Match="NavLinkMatch.All">
+                            <MenuItem Key="sub1m1">Guid 生成</MenuItem>
+                        </NavLink>
+                        <NavLink class="nav-link" href="md5" Match="NavLinkMatch.All">
+                            <MenuItem Key="sub1m2">MD5 计算</MenuItem>
+                        </NavLink>
+                        <NavLink class="nav-link" href="base64" Match="NavLinkMatch.All">
+                            <MenuItem Key="sub1m3">Base64 编码&解码</MenuItem>
+                        </NavLink>
+                    </SubMenu>
+        </Menu>
+    </Sider>
+    <Layout Class="site-layout" Style=" margin-left: 200px">
+        <Header Class="site-layout-background" Style="padding: 0" ></Header>
+        <Content Class="site-layout-background" Style="margin: 24px 16px 0; padding:24px; overflow: initial; min-height:calc(100vh - 158px); ">
+            @Body
+        </Content>
+        <Footer Style=" text-align: center;">Ant Design ©2018 Created by Ant UED</Footer>
+    </Layout>
+</Layout>
+
+</div>
+
+<style>
+    .logo {
+        margin: 30px auto;
+        text-align:center;
+    }
+    .logo h1{
+        color:#4caf50;
+        font-size:1.6rem;
+        font-weight:700
+    }
+    .logo p{
+        color:#666;
+        font-size:.9rem
+    }
+    .site-layout .site-layout-background {
+        background: #fff;
+    }
+</style>

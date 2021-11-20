@@ -1,0 +1,81 @@
+﻿@page "/base64"
+@using System.Text
+@using System.Security.Cryptography
+@inject IJSRuntime _jsRuntime
+
+<PageTitle>MD5 计算</PageTitle>
+
+<Row Gutter="24">
+    <Col Class="gutter-row" Span="24">
+    <TextArea ShowCount MaxLength=5000 Rows=10 Placeholder="这里是原文内容，输入的内容自动编码" @bind-value="plaintext" OnChange="onPlaintextChange" />
+    </Col>
+</Row>
+<Row Gutter="24">
+    <Col Class="gutter-row" Span="2">
+    <Button Type="@ButtonType.Primary" Block @onclick="Encode">Base64编码</Button>
+    </Col>
+    <Col Class="gutter-row" Span="2">
+    <Button Type="@ButtonType.Primary" Block @onclick="Decode">Base64解码</Button>
+    </Col>
+    <Col Class="gutter-row" Span="2">
+    <Button Block @onclick="() => CopyToClipboard(plaintext)">复制原文</Button>
+    </Col>
+    <Col Class="gutter-row" Span="2">
+    <Button Danger Type="@ButtonType.Dashed" Block @onclick="() => CopyToClipboard(ciphertext)">复制密文</Button>
+    </Col>
+</Row>
+<br />
+<Row Gutter="24">
+    <Col Class="gutter-row" Span="24">
+    <TextArea ShowCount MaxLength=5000 Rows=10 Placeholder="这里是编码后的Base64内容，输入内容如符合Base64编码规则，则自动解码" @bind-value="ciphertext" OnChange="onCiphertextChange" />
+    </Col>
+</Row>
+
+@code {
+    private string plaintext = "";
+    private string ciphertext = "";
+
+    private void onPlaintextChange()
+    {
+        Encode();
+    }
+    private void onCiphertextChange()
+    {
+        Decode();
+    }
+
+    private void Encode()
+    {
+        if (string.IsNullOrWhiteSpace(plaintext))
+        {
+            ciphertext = default;
+            return;
+        }
+        ciphertext = Convert.ToBase64String(Encoding.UTF8.GetBytes(plaintext));
+    }
+
+    private void Decode()
+    {
+        if (string.IsNullOrWhiteSpace(ciphertext))
+        {
+            plaintext = default;
+            return;
+        }
+        var buffer = new Span<byte>(new byte[ciphertext.Length]);
+        var result = Convert.TryFromBase64String(ciphertext, buffer, out var temp);
+        if (result)
+        {
+            plaintext = Encoding.UTF8.GetString(Convert.FromBase64String(ciphertext));
+            return;
+        }
+        plaintext = default;
+    }
+
+    public void CopyToClipboard(string text)
+    {
+        if (!string.IsNullOrWhiteSpace(text))
+        {
+            _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+        }
+    }
+}

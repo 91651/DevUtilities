@@ -1,0 +1,120 @@
+﻿@page "/md5"
+@using System.Text
+@using System.Security.Cryptography
+@inject IJSRuntime _jsRuntime
+
+<PageTitle>MD5 计算</PageTitle>
+
+<Row Gutter="24">
+    <Col Class="gutter-row" Span="10">
+    <Row Gutter="24">
+        <Col Class="gutter-row" Span="24">
+        <TextArea ShowCount MaxLength=5000 Rows="8" Placeholder="请在这里输入您要计算MD5的内容，目前最大支持5000个字符。" @bind-Value="text" />
+        </Col>
+    </Row>
+    <Row Gutter="24">
+        <Col Class="gutter-row" Span="24">
+        <TextArea MaxLength=1000 Rows="2" Placeholder="请在这里输入密码(Salt)，非必填项" @bind-Value="salt" />
+        </Col>
+    </Row>
+    <br />
+    <Row Gutter="24">
+        <Col Class="gutter-row" Span="24">
+        <Button Type="@ButtonType.Primary" Block @onclick="Compute">计算</Button>
+        </Col>
+    </Row>
+    </Col>
+    <Col Class="gutter-row" Span="10">
+    <Row Gutter="24">
+        <Col Class="gutter-row" Span="24">
+        <Input Placeholder="尚未计算" ReadOnly="true" Size="@InputSize.Large" Value="@md5">
+        <AddOnBefore>32位大写</AddOnBefore>
+        <Suffix>
+            <Button Type="@ButtonType.Link" Icon="@IconType.Outline.Copy" @onclick="@(() => CopyToClipboard(md5))" />
+        </Suffix>
+        </Input>
+        </Col>
+    </Row>
+    <br />
+    <Row Gutter="24">
+        <Col Class="gutter-row" Span="24">
+        <Input Placeholder="尚未计算" ReadOnly="true" Size="@InputSize.Large" Value="@md5.ToLower()">
+        <AddOnBefore>32位小写</AddOnBefore>
+        <Suffix>
+            <Button Type="@ButtonType.Link" Icon="@IconType.Outline.Copy" @onclick="@(() => CopyToClipboard(md5.ToLower()))" />
+        </Suffix>
+        </Input>
+        </Col>
+    </Row>
+    <br />
+    <Row Gutter="24">
+        <Col Class="gutter-row" Span="24">
+        <Input Placeholder="尚未计算" ReadOnly="true" Size="@InputSize.Large" Value="@md5_16">
+        <AddOnBefore>16位大写</AddOnBefore>
+        <Suffix>
+            <Button Type="@ButtonType.Link" Icon="@IconType.Outline.Copy" @onclick="@(() => CopyToClipboard(md5_16))" />
+        </Suffix>
+        </Input>
+        </Col>
+    </Row>
+    <br />
+    <Row Gutter="24">
+        <Col Class="gutter-row" Span="24">
+        <Input Placeholder="尚未计算" ReadOnly="true" Size="@InputSize.Large" Value="@md5_16.ToLower()">
+        <AddOnBefore>16位小写</AddOnBefore>
+        <Suffix>
+            <Button Type="@ButtonType.Link" Icon="@IconType.Outline.Copy" @onclick="@(() => CopyToClipboard(md5_16.ToLower()))" />
+        </Suffix>
+        </Input>
+        </Col>
+    </Row>
+    </Col>
+</Row>
+
+@code {
+    private string text = "";
+    private string salt = "";
+    private string md5 = "";
+    private string md5_16 = "";
+
+    private void Compute()
+    {
+        if (!string.IsNullOrWhiteSpace(text))
+        {
+            if (string.IsNullOrWhiteSpace(salt))
+            {
+                md5 = Md5Compute(text);
+            }
+            else
+            {
+                md5 = HmacMd5Compute(text, salt);
+            }
+            md5_16 = md5.Substring(8, 16);
+        }
+    }
+
+    public void CopyToClipboard(string text)
+    {
+        if (!string.IsNullOrWhiteSpace(text))
+        {
+            _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+        }
+    }
+
+    public string HmacMd5Compute(string str, string key = "")
+    {
+        var inBytes = Encoding.UTF8.GetBytes(str);
+        var keyBytes = Encoding.UTF8.GetBytes(key);
+        var hmacmd5 = new HMACMD5 { Key = keyBytes };
+        var hashBytes = hmacmd5.ComputeHash(inBytes);
+        var outStr = string.Concat(hashBytes.Select(b => b.ToString("X2")));
+        return outStr;
+    }
+    public static string Md5Compute(string str)
+    {
+        byte[] inBytes = Encoding.UTF8.GetBytes(str);
+        byte[] hashBytes = MD5.Create().ComputeHash(inBytes);
+        var outStr = string.Concat(hashBytes.Select(b => b.ToString("X2")));
+        return outStr;
+    }
+}

@@ -1,0 +1,65 @@
+﻿@page "/guid"
+@inject IJSRuntime _jsRuntime
+
+<PageTitle>Guid 生成</PageTitle>
+
+<Row Gutter="24">
+    <Col Class="gutter-row" Span="6">
+    <Button Type="@ButtonType.Primary" Block @onclick="GenerateNewGuid">生成新GUID</Button>
+    </Col>
+    <Col Class="gutter-row" Span="10">
+    <Input Placeholder="large size" ReadOnly="true" Size="@InputSize.Large" Value="@guid.ToString().ToUpper()">
+    <AddOnBefore>大写</AddOnBefore>
+    <Suffix>
+                <Button Type="@ButtonType.Link" Icon="@IconType.Outline.Copy" @onclick="@(() => CopyToClipboard(@guid.ToString().ToUpper()))" />
+    </Suffix>
+    </Input>
+    </Col>
+</Row>
+<br />
+<Row Gutter="24">
+    <Col Class="gutter-row" Offset="6" Span="10">
+    <Input Placeholder="large size" ReadOnly="true" Size="@InputSize.Large" Value="@guid">
+    <AddOnBefore>小写</AddOnBefore>
+    <Suffix>
+        <Button Type="@ButtonType.Link" Icon="@IconType.Outline.Copy" @onclick="() => CopyToClipboard(guid.ToString())" />
+    </Suffix>
+    </Input>
+    </Col>
+</Row>
+<br />
+<Row Gutter="24">
+    <Col Class="gutter-row" Offset="6" Span="10">
+    <Input Placeholder="large size" ReadOnly="true" Size="@InputSize.Large" Value="@guid.ToString("N")">
+    <AddOnBefore>无连接符</AddOnBefore>
+    <Suffix>
+        <Button Type="@ButtonType.Link" Icon="@IconType.Outline.Copy" @onclick="@(() => CopyToClipboard(guid.ToString("N")))" />
+    </Suffix>
+    </Input>
+    </Col>
+</Row>
+<br />
+    <Row Gutter="24">
+    <Col Class="gutter-row" Offset="6" Span="10">
+    <Input Placeholder="large size" ReadOnly="true" Size="@InputSize.Large" Value="@guid.ToString("X")">
+    <AddOnBefore>十六进制</AddOnBefore>
+    <Suffix>
+    <Button Type="@ButtonType.Link" Icon="@IconType.Outline.Copy" @onclick="@(() => CopyToClipboard(guid.ToString("X")))" />
+    </Suffix>
+    </Input>
+    </Col>
+    </Row>
+
+@code {
+    private System.Guid guid = System.Guid.NewGuid();
+
+    private void GenerateNewGuid()
+    {
+        guid = System.Guid.NewGuid();
+    }
+
+    public void CopyToClipboard(string text)
+    {
+        _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+    }
+}

@@ -1,0 +1,62 @@
+﻿@page "/json-format"
+@using System.Text
+@using System.Security.Cryptography
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@inject IJSRuntime _jsRuntime
+@inject MessageService _message
+
+<PageTitle>Json 格式化</PageTitle>
+
+<Row Gutter="24">
+    <Col Class="gutter-row" Span="10">
+    <Row Gutter="24">
+        <Col Class="gutter-row" Span="24">
+        <TextArea ShowCount MaxLength=5000 Rows="20" Placeholder="请在这里输入您的JSON内容。" @bind-Value="sourceText" />
+        </Col>
+    </Row>
+    <Row Gutter="24">
+        <Col Class="gutter-row" Span="6">
+        <Button Type="@ButtonType.Primary" Block @onclick="Format">格式化</Button>
+        </Col>
+        <Col Class="gutter-row" Span="6">
+        <Button Block @onclick="() => CopyToClipboard(sourceText)">复制原文JSON</Button>
+        </Col>
+        <Col Class="gutter-row" Span="6">
+        <Button Danger Type="@ButtonType.Dashed" Block @onclick="() => CopyToClipboard(targetText)">复制结果JSON</Button>
+        </Col>
+    </Row>
+    </Col>
+    <Col Class="gutter-row" Span="10">
+        <TextArea ShowCount MaxLength=5000 Rows="20" Placeholder="这里是格式化后的结果，可以点击按钮复制。" @bind-Value="targetText" />
+    </Col>
+</Row>
+
+@code {
+    private string sourceText = "";
+    private string targetText = "";
+
+    private void Format()
+    {
+        if (!string.IsNullOrWhiteSpace(sourceText))
+        {
+            try
+            {
+                var json = JsonConvert.DeserializeObject(sourceText);
+                targetText = JsonConvert.SerializeObject(json, Formatting.Indented);
+            }
+            catch (Exception)
+            {
+                _message.Warning("Json 格式存在错误");
+            }
+        }
+    }
+
+    public void CopyToClipboard(string text)
+    {
+        if (!string.IsNullOrWhiteSpace(text))
+        {
+            _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+        }
+    }
+}

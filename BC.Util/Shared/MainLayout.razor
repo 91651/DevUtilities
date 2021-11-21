@@ -30,6 +30,16 @@
                             <MenuItem Key="sub1m4">AES 编码&解码</MenuItem>
                         </NavLink>
                     </SubMenu>
+            @{ RenderFragment sub2Title =
+                        @<span>
+                            <Icon Type="user" Theme="outline" />
+                            文本工具
+                        </span>; }
+                    <SubMenu Key="sub2" Title="文本工具">
+                        <NavLink class="nav-link" href="json-format" Match="NavLinkMatch.All">
+                            <MenuItem Key="sub2m1">JSON 格式化</MenuItem>
+                        </NavLink>
+                    </SubMenu>
         </Menu>
     </Sider>
     <Layout Class="site-layout" Style=" margin-left: 200px">

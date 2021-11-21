@@ -2,9 +2,8 @@
 
 <PageTitle>BC.Util</PageTitle>
 
-<div class="page">
     <Layout>
-    <Sider Style="overflow: auto;height: 100vh;position: fixed;left: 0;">
+    <Sider Breakpoint="@BreakpointType.Lg" CollapsedWidth="64" Collapsed=@collapsed NoTrigger OnCollapse="OnCollapse" Style="overflow: auto;min-height: 100vh;">
         <div class="logo">
 			<a href="/" title="返回首页"></a>
 			<h1>实用工具</h1>
@@ -13,10 +12,10 @@
         <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Inline" DefaultSelectedKeys=@(new[]{"sub1"}) DefaultOpenKeys=@(new[] {"sub1"})>
             @{ RenderFragment sub1Title =
                         @<span>
-                            <Icon Type="user" Theme="outline" />
-                            编码加密
+                            <Icon Type="experiment" Theme="outline" />
+                            <span class="nav-text">编码加密</span>
                         </span>; }
-                    <SubMenu Key="sub1" Title="编码加密">
+                    <SubMenu Key="sub1" Title="编码加密" TitleTemplate=sub1Title>
                         <NavLink class="nav-link" href="guid" Match="NavLinkMatch.All">
                             <MenuItem Key="sub1m1">GUID 生成</MenuItem>
                         </NavLink>
@@ -32,22 +31,31 @@
                     </SubMenu>
             @{ RenderFragment sub2Title =
                         @<span>
-                            <Icon Type="user" Theme="outline" />
-                            文本工具
+                            <Icon Type="field-string" Theme="outline" />
+                            <span class="nav-text">文本工具</span>
                         </span>; }
-                    <SubMenu Key="sub2" Title="文本工具">
+                    <SubMenu Key="sub2" Title="文本工具" TitleTemplate=sub2Title>
                         <NavLink class="nav-link" href="json-format" Match="NavLinkMatch.All">
                             <MenuItem Key="sub2m1">JSON 格式化</MenuItem>
                         </NavLink>
                     </SubMenu>
         </Menu>
     </Sider>
-    <Layout Class="site-layout" Style=" margin-left: 200px">
-        <Header Class="site-layout-background" Style="padding: 0" ></Header>
+    <Layout Class="site-layout">
+        <Header Class="site-layout-background" Style="padding: 0;">
+            @if (collapsed)
+            {
+                <Icon Type="menu-unfold" Theme="outline" Class="trigger" OnClick="toggle" />
+            }
+            else
+            {
+                <Icon Type="menu-fold" Theme="outline" Class="trigger" OnClick="toggle" />
+            }
+        </Header>
         <Content Class="site-layout-background" Style="margin: 24px 16px 0; padding:24px; overflow: initial; min-height:calc(100vh - 158px); ">
             @Body
         </Content>
-        <Footer Class="footer" Style=" text-align: center; position:fixed; left:200px; bottom:0; right:0;">
+        <Footer Class="footer" Style="@(collapsed ? "text-align: center; position:fixed; bottom:0; right:0; left:64px;" : "text-align: center; position:fixed; bottom:0; right:0; left:200px;" )" >
             感谢 <a href="https://github.com/91651/DevUtilities/issues" target="_blank" >问题反馈</a>，<a href="mailto:mail@521.org.cn">Email</a>
             <br />
             本站由<a href="https://dotnet.microsoft.com/download/dotnet/6.0" target="_blank">.NET 6.0</a>驱动，<a href="https://docs.microsoft.com/zh-cn/aspnet/core/blazor" target="_blank">Blazor</a>技术展现！本站源代码：
@@ -57,9 +65,32 @@
     </Layout>
 </Layout>
 
-</div>
+@code
+{
+    bool collapsed;
+
+    void toggle()
+    {
+        collapsed = !collapsed;
+    }
+    void OnCollapse(bool isCollapsed)
+    {
+        collapsed = !collapsed;
+    }
+}
 
 <style>
+    .site-layout .trigger {
+        font-size: 18px;
+        line-height: 64px;
+        padding: 0 24px;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+        .site-layout .trigger:hover {
+            color: #1890ff;
+        }
     .logo {
         margin: 30px auto;
         text-align:center;

@@ -1,9 +1,47 @@
 ﻿@page "/"
+@inject IHttpContextAccessor httpContextAccessor
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<Result Icon="@("smile-outline")"
+        Status="@("info")">
+    <Row Justify="center">
+        <Col Span="6">
+        <Input Placeholder="large size" ReadOnly="true" Size="@InputSize.Large" Value="ip">
+        <AddOnBefore>IP:</AddOnBefore>
+        </Input>
+        </Col>
+    </Row>
+    <br />
+    <Row Justify="center">
+    <Col Span="6">
+    <Input  ReadOnly="true" Size="@InputSize.Large" Value="time">
+    <AddOnBefore>时间:</AddOnBefore>
+    </Input>
+    </Col>
+</Row>
+</Result>
 
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code {
+    private string ip = "";
+    private string time = "";
+    private System.Timers.Timer timer;
+    protected override async Task OnInitializedAsync()
+    {
+        GetIp();
+        GetTime();
+    }
+    private void GetIp()
+    {
+        ip = httpContextAccessor.HttpContext.Connection?.RemoteIpAddress.ToString();
+    }
+    private void GetTime()
+    {
+        timer = new System.Timers.Timer(1000);
+        timer.Elapsed += (Object source, System.Timers.ElapsedEventArgs e) =>
+        {
+            time = DateTime.Now.ToString("F");
+        };
+        timer.Enabled = true;
+    }   
+}

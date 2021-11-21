@@ -1,0 +1,255 @@
+﻿@page "/aes"
+@using System.Text
+@using System.Security.Cryptography
+@inject IJSRuntime _jsRuntime
+
+<PageTitle>AES 编码&解码</PageTitle>
+
+<Row Gutter="24">
+    <Col Class="gutter-row" Span="24">
+    <TextArea ShowCount MaxLength=5000 Rows=10 Placeholder="这里是原文内容，输入的内容自动编码" @bind-value="plaintext" OnChange="onPlaintextChange" />
+    </Col>
+</Row>
+<Space Size=@(("30", "20")) Wrap>
+    <SpaceItem>
+          <Space>
+            <SpaceItem>
+                密钥(Key)：
+            </SpaceItem>
+            <SpaceItem>
+                <TextArea  Rows=1 Placeholder="密钥(Key)" @bind-value="key" Style="width: 300px" />
+            </SpaceItem>
+        </Space>   
+    </SpaceItem>
+    <SpaceItem>
+      <Space>
+            <SpaceItem>
+                向量(IV)：
+            </SpaceItem>
+            <SpaceItem>
+                <TextArea  Rows=1 Placeholder="向量(IV)" @bind-value="iv" Style="width: 300px" />
+            </SpaceItem>
+        </Space>   
+    </SpaceItem>
+    <SpaceItem>
+          <Space>
+            <SpaceItem>
+                编码：
+            </SpaceItem>
+            <SpaceItem>
+                <Select TItemValue="EncodedEnum" TItem="string" Style="width: 100px"
+                        @bind-Value="@encodedMode">
+                        <SelectOptions>
+                            @encodedModeItems
+                        </SelectOptions>
+                </Select>
+            </SpaceItem>
+        </Space>   
+    </SpaceItem>
+	<SpaceItem>
+          <Space>
+            <SpaceItem>
+                模式：
+            </SpaceItem>
+            <SpaceItem>
+                <Select TItemValue="CipherMode" TItem="string" Style="width: 100px"
+                        @bind-Value="@cipherMode">
+                        <SelectOptions>
+                            @cipherModeItems
+                        </SelectOptions>
+                </Select>
+            </SpaceItem>
+        </Space>   
+    </SpaceItem>
+    <SpaceItem>
+         <Space>
+           <SpaceItem>
+               填充：
+           </SpaceItem>
+           <SpaceItem>
+               <Select TItemValue="PaddingMode" TItem="string" Style="width: 150px"
+                        @bind-Value="@paddingMode">
+                        <SelectOptions>
+                            @paddingModeItems
+                        </SelectOptions>
+                </Select>
+           </SpaceItem>
+       </Space>   
+   </SpaceItem>
+</Space>
+<Row Gutter="24">
+    <Col Class="gutter-row" Span="2">
+    <Button Type="@ButtonType.Primary" Block @onclick="Encode">AES 加密 </Button>
+    </Col>
+    <Col Class="gutter-row" Span="2">
+    <Button Type="@ButtonType.Primary" Block @onclick="Decode">AES 解密</Button>
+    </Col>
+    <Col Class="gutter-row" Span="2">
+    <Button Block @onclick="() => CopyToClipboard(plaintext)">复制原文</Button>
+    </Col>
+    <Col Class="gutter-row" Span="2">
+    <Button Danger Type="@ButtonType.Dashed" Block @onclick="() => CopyToClipboard(ciphertext)">复制密文</Button>
+    </Col>
+</Row>
+<br />
+<Row Gutter="24">
+    <Col Class="gutter-row" Span="24">
+    <TextArea ShowCount MaxLength=5000 Rows=10 Placeholder="这里是编码后的Base64内容，输入内容如符合Base64编码规则，则自动解码" @bind-value="ciphertext" OnChange="onCiphertextChange" />
+    </Col>
+</Row>
+
+@code {
+    private EncodedEnum encodedMode = EncodedEnum.UTF8;
+    private CipherMode cipherMode = CipherMode.CBC;
+    private PaddingMode paddingMode = PaddingMode.PKCS7;
+    private string key = "";
+    private string iv = "";
+    private string plaintext = "";
+    private string ciphertext = "";
+
+    private void onPlaintextChange()
+    {
+        Encode();
+    }
+    private void onCiphertextChange()
+    {
+        Decode();
+    }
+
+    private void Encode()
+    {
+        if (string.IsNullOrWhiteSpace(plaintext))
+        {
+            ciphertext = default;
+            return;
+        }
+        var eKey = PaddingKeyText(key);
+        var eIV =  PaddingIVText(iv);
+        ciphertext = Encrypt(plaintext, eKey, eIV, paddingMode, cipherMode);
+    }
+
+    private void Decode()
+    {
+        if (string.IsNullOrWhiteSpace(ciphertext))
+        {
+            plaintext = default;
+            return;
+        }
+        var buffer = new Span<byte>(new byte[ciphertext.Length]);
+        var result = Convert.TryFromBase64String(ciphertext, buffer, out var temp);
+        if (result)
+        {
+            var eKey = PaddingKeyText(key);
+            var eIV =  PaddingIVText(iv);
+            plaintext = Decrypt(ciphertext, eKey, eIV, paddingMode, cipherMode);
+            return;
+        }
+        plaintext = default;
+    }
+
+    public void CopyToClipboard(string text)
+    {
+        if (!string.IsNullOrWhiteSpace(text))
+        {
+            _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+        }
+    }
+
+    // 下拉框初始化
+    enum EncodedEnum{
+        UTF8,
+        Hex
+    }
+    RenderFragment encodedModeItems =
+    @<Template>
+        @foreach (var item in Enum.GetValues<EncodedEnum>())
+        {
+            <SelectOption TItemValue="EncodedEnum" TItem="string" Value=@item Label=@item.ToString() />
+        }
+    </Template>;
+    RenderFragment cipherModeItems =
+    @<Template>
+        @foreach (var item in Enum.GetValues<CipherMode>())
+        {
+            <SelectOption TItemValue="CipherMode" TItem="string" Value=@item Label=@item.ToString() />
+        }
+    </Template>;
+    RenderFragment paddingModeItems =
+    @<Template>
+        @foreach (var item in Enum.GetValues<PaddingMode>())
+        {
+            <SelectOption TItemValue="PaddingMode" TItem="string" Value=@item Label=@item.ToString() />
+        }
+        </Template>
+    ;
+    // 加密算法
+    public string PaddingKeyText(string text)
+    {
+        var bytes = Encoding.UTF8.GetBytes(text);
+        if(bytes.Length <= 16)
+        {
+            return PaddingText(text, 16);
+        }
+        else if(bytes.Length <= 24)
+        {
+            return PaddingText(text, 24);
+        }
+        else
+        {
+            return PaddingText(text, 32);
+        }
+
+    }
+    public string PaddingIVText(string text)
+    {
+        return PaddingText(text, 16);
+    }
+    public string PaddingText(string text, int length)
+    {
+        var bytes = Encoding.UTF8.GetBytes(text);
+        var newbytes = new byte[length];
+        Buffer.BlockCopy(bytes, 0, newbytes , 0, Math.Min(newbytes.Length, bytes.Length));
+        var newText = Encoding.UTF8.GetString(newbytes);
+        return newText;
+    }
+    public string Encrypt(string plaintext, string key, string iv, PaddingMode paddingMode = PaddingMode.PKCS7, CipherMode cipherMode = CipherMode.CBC)
+    {
+        var inBytes = Encoding.UTF8.GetBytes(plaintext);
+        var keyBytes = Encoding.UTF8.GetBytes(key);
+        var ivBytes = Encoding.UTF8.GetBytes(iv);
+        using (var aes = System.Security.Cryptography.Aes.Create())
+        {
+            aes.Key = keyBytes;
+            aes.IV = ivBytes;
+            aes.Padding = paddingMode;
+            aes.Mode = cipherMode;
+            using (var ms = new MemoryStream())
+            using (var cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write))
+            {
+                cs.Write(inBytes, 0, inBytes.Length);
+                cs.FlushFinalBlock();
+                return Convert.ToBase64String(ms.ToArray());
+            }
+        }
+    }
+    public string Decrypt(string ciphertext, string key, string iv, PaddingMode paddingMode = PaddingMode.PKCS7, CipherMode cipherMode = CipherMode.CBC)
+        {
+            var inBytes = Convert.FromBase64String(ciphertext);
+            var keyBytes = Encoding.UTF8.GetBytes(key);
+            var ivBytes = Encoding.UTF8.GetBytes(iv);
+            using (var aes = System.Security.Cryptography.Aes.Create())
+            {
+                aes.Key = keyBytes;
+                aes.IV = ivBytes;
+                aes.Padding = paddingMode;
+                aes.Mode = cipherMode;
+                using (var ms = new MemoryStream())
+                using (var cs = new CryptoStream(ms, aes.CreateDecryptor(), CryptoStreamMode.Write))
+                {
+                    cs.Write(inBytes, 0, inBytes.Length);
+                    cs.FlushFinalBlock();
+                    return Encoding.UTF8.GetString(ms.ToArray());
+                }
+            }
+        }
+}

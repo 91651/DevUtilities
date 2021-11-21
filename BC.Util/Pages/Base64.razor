@@ -11,18 +11,24 @@
     </Col>
 </Row>
 <Row Gutter="24">
-    <Col Class="gutter-row" Span="2">
-    <Button Type="@ButtonType.Primary" Block @onclick="Encode">Base64编码</Button>
-    </Col>
-    <Col Class="gutter-row" Span="2">
-    <Button Type="@ButtonType.Primary" Block @onclick="Decode">Base64解码</Button>
-    </Col>
-    <Col Class="gutter-row" Span="2">
-    <Button Block @onclick="() => CopyToClipboard(plaintext)">复制原文</Button>
-    </Col>
-    <Col Class="gutter-row" Span="2">
-    <Button Danger Type="@ButtonType.Dashed" Block @onclick="() => CopyToClipboard(ciphertext)">复制密文</Button>
-    </Col>
+    <Space Size=@(("8", "16")) Style="width:100%;" Wrap>
+        <SpaceItem>
+            <Button Type="@ButtonType.Primary" @onclick="Encode">Base64编码</Button>
+        </SpaceItem>
+        <SpaceItem>
+            <Button Type="@ButtonType.Primary"  @onclick="Decode">Base64解码</Button>
+</SpaceItem>
+<SpaceItem>
+    <Button @onclick="() => CopyToClipboard(plaintext)"> 复制原文 </Button>
+</SpaceItem>
+<SpaceItem>
+    <Button Danger Type="@ButtonType.Dashed" @onclick="() => CopyToClipboard(ciphertext)"> 复制密文 </Button>
+</SpaceItem>
+    </Space>
+    
+    
+    
+    
 </Row>
 <br />
 <Row Gutter="24">

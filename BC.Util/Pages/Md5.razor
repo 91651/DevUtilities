@@ -5,8 +5,8 @@
 
 <PageTitle>MD5 计算</PageTitle>
 
-<Row Gutter="24">
-    <Col Class="gutter-row" Span="10">
+<Row Gutter="24" Justify="center">
+    <Col Class="gutter-row" Xs="24" Sm="18" Md="10">
     <Row Gutter="24">
         <Col Class="gutter-row" Span="24">
         <TextArea ShowCount MaxLength=5000 Rows="8" Placeholder="请在这里输入您要计算MD5的内容，目前最大支持5000个字符。" @bind-Value="text" />
@@ -23,8 +23,9 @@
         <Button Type="@ButtonType.Primary" Block @onclick="Compute">计算</Button>
         </Col>
     </Row>
+    <br />
     </Col>
-    <Col Class="gutter-row" Span="10">
+    <Col Class="gutter-row" Xs="24" Sm="18" Md="10">
     <Row Gutter="24">
         <Col Class="gutter-row" Span="24">
         <Input Placeholder="尚未计算" ReadOnly="true" Size="@InputSize.Large" Value="@md5">

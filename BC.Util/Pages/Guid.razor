@@ -3,52 +3,62 @@
 
 <PageTitle>Guid 生成</PageTitle>
 
-<Row Gutter="24">
-    <Col Class="gutter-row" Span="6">
-    <Button Type="@ButtonType.Primary" Block @onclick="GenerateNewGuid">生成新GUID</Button>
+<Row Gutter="24" Justify="center">
+    <Col Class="gutter-row" Xs="24" Sm="12" Md="6">
+        <Space Direction="DirectionVHType.Vertical" Style="width:100%;">
+            <SpaceItem>
+                <Button Type="@ButtonType.Primary" Block @onclick="GenerateNewGuid">生成新GUID</Button>
+            </SpaceItem>
+        </Space>
     </Col>
-    <Col Class="gutter-row" Span="10">
-    <Input Placeholder="large size" ReadOnly="true" Size="@InputSize.Large" Value="@guid.ToString().ToUpper()">
-    <AddOnBefore>大写</AddOnBefore>
-    <Suffix>
-                <Button Type="@ButtonType.Link" Icon="@IconType.Outline.Copy" @onclick="@(() => CopyToClipboard(@guid.ToString().ToUpper()))" />
-    </Suffix>
-    </Input>
+    <Col Class="gutter-row" Xs="24" Sm="18" Md="10">
+        <Row>
+            <Space Direction="DirectionVHType.Vertical" Style="width:100%;">
+                <SpaceItem>
+                    <Col Span="24">
+                            <Input Placeholder="large size" ReadOnly="true" Size="@InputSize.Large" Value="@guid.ToString().ToUpper()">
+                            <AddOnBefore>大写</AddOnBefore>
+                            <Suffix>
+                                        <Button Type="@ButtonType.Link" Icon="@IconType.Outline.Copy" @onclick="@(() => CopyToClipboard(@guid.ToString().ToUpper()))" />
+                            </Suffix>
+                            </Input>
+                        </Col>
+                </SpaceItem>
+                <SpaceItem>
+                    <Col Span="24">
+                            <Input Placeholder="large size" ReadOnly="true" Size="@InputSize.Large" Value="@guid">
+                                <AddOnBefore>小写</AddOnBefore>
+                                <Suffix>
+                                    <Button Type="@ButtonType.Link" Icon="@IconType.Outline.Copy" @onclick="() => CopyToClipboard(guid.ToString())" />
+                                </Suffix>
+                            </Input>
+                        </Col>
+                </SpaceItem>
+                <SpaceItem>
+                    <Col Span="24">
+                            <Input Placeholder="large size" ReadOnly="true" Size="@InputSize.Large" Value="@guid.ToString("N")">
+                                <AddOnBefore>无连接符</AddOnBefore>
+                                <Suffix>
+                                    <Button Type="@ButtonType.Link" Icon="@IconType.Outline.Copy" @onclick="@(() => CopyToClipboard(guid.ToString("N")))" />
+                                </Suffix>
+                            </Input>
+                        </Col>
+                </SpaceItem>
+                <SpaceItem>
+                    <Col Span="24">
+                            <Input Placeholder="large size" ReadOnly="true" Size="@InputSize.Large" Value="@guid.ToString("X")">
+                            <AddOnBefore>十六进制</AddOnBefore>
+                            <Suffix>
+                            <Button Type="@ButtonType.Link" Icon="@IconType.Outline.Copy" @onclick="@(() => CopyToClipboard(guid.ToString("X")))" />
+                            </Suffix>
+                        </Input>
+                        </Col>
+                </SpaceItem>
+            </Space>
+        </Row>
+    
     </Col>
 </Row>
-<br />
-<Row Gutter="24">
-    <Col Class="gutter-row" Offset="6" Span="10">
-    <Input Placeholder="large size" ReadOnly="true" Size="@InputSize.Large" Value="@guid">
-    <AddOnBefore>小写</AddOnBefore>
-    <Suffix>
-        <Button Type="@ButtonType.Link" Icon="@IconType.Outline.Copy" @onclick="() => CopyToClipboard(guid.ToString())" />
-    </Suffix>
-    </Input>
-    </Col>
-</Row>
-<br />
-<Row Gutter="24">
-    <Col Class="gutter-row" Offset="6" Span="10">
-    <Input Placeholder="large size" ReadOnly="true" Size="@InputSize.Large" Value="@guid.ToString("N")">
-    <AddOnBefore>无连接符</AddOnBefore>
-    <Suffix>
-        <Button Type="@ButtonType.Link" Icon="@IconType.Outline.Copy" @onclick="@(() => CopyToClipboard(guid.ToString("N")))" />
-    </Suffix>
-    </Input>
-    </Col>
-</Row>
-<br />
-    <Row Gutter="24">
-    <Col Class="gutter-row" Offset="6" Span="10">
-    <Input Placeholder="large size" ReadOnly="true" Size="@InputSize.Large" Value="@guid.ToString("X")">
-    <AddOnBefore>十六进制</AddOnBefore>
-    <Suffix>
-    <Button Type="@ButtonType.Link" Icon="@IconType.Outline.Copy" @onclick="@(() => CopyToClipboard(guid.ToString("X")))" />
-    </Suffix>
-    </Input>
-    </Col>
-    </Row>
 
 @code {
     private System.Guid guid = System.Guid.NewGuid();

@@ -17,7 +17,7 @@
                 密钥(Key)：
             </SpaceItem>
             <SpaceItem>
-                <TextArea  Rows=1 Placeholder="密钥(Key)" @bind-value="key" Style="width: 300px" />
+                <TextArea  Rows=1 Placeholder="密钥(Key)" @bind-value="key" />
             </SpaceItem>
         </Space>   
     </SpaceItem>
@@ -27,7 +27,7 @@
                 向量(IV)：
             </SpaceItem>
             <SpaceItem>
-                <TextArea  Rows=1 Placeholder="向量(IV)" @bind-value="iv" Style="width: 300px" />
+                <TextArea  Rows=1 Placeholder="向量(IV)" @bind-value="iv" />
             </SpaceItem>
         </Space>   
     </SpaceItem>
@@ -37,7 +37,7 @@
                 编码：
             </SpaceItem>
             <SpaceItem>
-                <Select TItemValue="EncodedEnum" TItem="string" Style="width: 100px"
+                <Select TItemValue="EncodedEnum" TItem="string"
                         @bind-Value="@encodedMode">
                         <SelectOptions>
                             @encodedModeItems
@@ -52,7 +52,7 @@
                 模式：
             </SpaceItem>
             <SpaceItem>
-                <Select TItemValue="CipherMode" TItem="string" Style="width: 100px"
+                <Select TItemValue="CipherMode" TItem="string"
                         @bind-Value="@cipherMode">
                         <SelectOptions>
                             @cipherModeItems
@@ -67,7 +67,7 @@
                填充：
            </SpaceItem>
            <SpaceItem>
-               <Select TItemValue="PaddingMode" TItem="string" Style="width: 150px"
+               <Select TItemValue="PaddingMode" TItem="string"
                         @bind-Value="@paddingMode">
                         <SelectOptions>
                             @paddingModeItems
@@ -78,16 +78,16 @@
    </SpaceItem>
 </Space>
 <Row Gutter="24">
-    <Col Class="gutter-row" Span="2">
+    <Col Class="gutter-row" Xs="10" Sm="6" Md="2">
     <Button Type="@ButtonType.Primary" Block @onclick="Encode">AES 加密 </Button>
     </Col>
-    <Col Class="gutter-row" Span="2">
+    <Col Class="gutter-row" Xs="10" Sm="6" Md="2">
     <Button Type="@ButtonType.Primary" Block @onclick="Decode">AES 解密</Button>
     </Col>
-    <Col Class="gutter-row" Span="2">
+    <Col Class="gutter-row" Xs="10" Sm="6" Md="2">
     <Button Block @onclick="() => CopyToClipboard(plaintext)">复制原文</Button>
     </Col>
-    <Col Class="gutter-row" Span="2">
+    <Col Class="gutter-row" Xs="10" Sm="6" Md="2">
     <Button Danger Type="@ButtonType.Dashed" Block @onclick="() => CopyToClipboard(ciphertext)">复制密文</Button>
     </Col>
 </Row>
